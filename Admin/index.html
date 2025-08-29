@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>LevelUp Admin Dashboard</title>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="logo"><h2>LevelUp Admin</h2></div>
+        <nav>
+          <div class="nav-item active" onclick="showPage('dashboard')">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+              />
+            </svg>
+            <span>Dashboard</span>
+          </div>
+          <div class="nav-item" onclick="showPage('customer')">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            <span>Customer</span>
+          </div>
+          <div class="nav-item" onclick="showPage('admin')">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M12 1l3 6 6 .75-4.12 4.62L16 19l-4-2.25L8 19l-.88-6.63L3 7.75 9 7l3-6z"
+              />
+            </svg>
+            <span>Admin</span>
+          </div>
+          <div class="nav-item" onclick="showPage('products')">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+              />
+            </svg>
+            <span>Products</span>
+          </div>
+          <div class="nav-item" onclick="showPage('orders')">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"
+              />
+            </svg>
+            <span>Orders</span>
+          </div>
+          <div class="nav-item" onclick="showPage('reports')">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+              <path
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
+              />
+            </svg>
+            <span>Reports</span>
+          </div>
+          <div class="nav-item">
+            <a href="../index.html" style="text-decoration: none; color: inherit;">
+              <svg class="nav-icon" viewBox="0 0 24 24">
+                <path
+                  d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+                />
+              </svg>
+              <span>Logout</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h1 id="page-title">Dashboard</h1>
+          <div class="user-info">
+            <span>Admin User</span>
+            <div class="user-avatar">A</div>
+          </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">1,247</div>
+              <div class="stat-label">Total Products</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">Rs. 2,45,000</div>
+              <div class="stat-label">Today's Sales</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">342</div>
+              <div class="stat-label">Active Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">15,678</div>
+              <div class="stat-label">Total Customers</div>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-title">Sales Overview</div>
+            <div class="chart-placeholder">Sales Chart Placeholder</div>
+          </div>
+
+          <div class="table-container">
+            <div class="table-header">
+              <div class="table-title">Recent Orders</div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Product</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#ORD-001</td>
+                  <td>John Doe</td>
+                  <td>EOS PRO WGP15</td>
+                  <td>NRs. 8,000</td>
+                  <td><span class="status status-active">Completed</span></td>
+                </tr>
+                <tr>
+                  <td>#ORD-002</td>
+                  <td>Jane Smith</td>
+                  <td>EOS PRO II SERIES</td>
+                  <td>NRs. 9,000</td>
+                  <td><span class="status status-inactive">Pending</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Customer Page -->
+        <div id="customer" class="page">
+          <div class="table-container">
+            <div class="table-header">
+              <div class="table-title">Customer Management</div>
+              <button class="btn btn-primary" onclick="showAddProduct()">
+                Add Customer
+              </button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Anuraj</td>
+                  <td>anurajshrestha7@gmail.com</td>
+                  <td>9840000000</td>
+                  <td>Mandikhatar, Kathmandu</td>
+                  <td><span class="status status-active">Active</span></td>
+                  <td>
+                    <button class="btn btn-success">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Krish</td>
+                  <td>krish@gmail.com</td>
+                  <td>9840000000</td>
+                  <td>Thimi</td>
+                  <td><span class="status status-active">Active</span></td>
+                  <td>
+                    <button class="btn btn-success">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Admin Page -->
+        <div id="admin" class="page">
+          <div class="table-container">
+            <div class="table-header">
+              <div class="table-title">Admin Management</div>
+              <button class="btn btn-primary" onclick="showAddProduct()">
+                Add Admin
+              </button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>root</td>
+                  <td>anurajshrestha7@gmail.com</td>
+                  <td>9840000000</td>
+                  <td>Mandikhatar, Kathmandu</td>
+                  <td><span class="status status-active">Active</span></td>
+                  <td>
+                    <button class="btn btn-success">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Products Page -->
+        <div id="products" class="page">
+          <div class="table-container">
+            <div class="table-header">
+              <div class="table-title">Product Management</div>
+              <button class="btn btn-primary" onclick="showAddProduct()">
+                Add New Product
+              </button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Color</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div
+                      style="
+                        width: 50px;
+                        height: 50px;
+                        background: #f0f0f0;
+                        border-radius: 8px;
+                      "
+                    ></div>
+                  </td>
+                  <td>EOS PRO II SERIES</td>
+                  <td>Black</td>
+                  <td>NRs. 9,000</td>
+                  <td>25</td>
+                  <td><span class="status status-active">Active</span></td>
+                  <td>
+                    <button class="btn btn-success">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div
+                      style="
+                        width: 50px;
+                        height: 50px;
+                        background: #f0f0f0;
+                        border-radius: 8px;
+                      "
+                    ></div>
+                  </td>
+                  <td>EOS PRO WGP15</td>
+                  <td>Blue</td>
+                  <td>NRs. 8,000</td>
+                  <td>12</td>
+                  <td><span class="status status-active">Active</span></td>
+                  <td>
+                    <button class="btn btn-success">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Add Product Form -->
+          <div id="add-product-form" style="display: none">
+            <div class="form-container">
+              <h3 style="margin-bottom: 20px; color: #2c3e50">
+                Add New Product
+              </h3>
+              <form>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input
+                      type="text"
+                      class="form-input"
+                      placeholder="Enter product name"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select">
+                      <option>Digital Joystick</option>
+                      <option>Analog Joystick</option>
+                      <option>Paddle Joystick</option>
+                      <option>Arcade Stick</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Price (₹)</label>
+                    <input
+                      type="number"
+                      class="form-input"
+                      placeholder="Enter price"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Stock Quantity</label>
+                    <input
+                      type="number"
+                      class="form-input"
+                      placeholder="Enter stock quantity"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Description</label>
+                  <textarea
+                    class="form-input"
+                    rows="4"
+                    placeholder="Enter product description"
+                  ></textarea>
+                </div>
+                <div style="text-align: right">
+                  <button
+                    type="button"
+                    class="btn"
+                    style="
+                      background: #95a5a6;
+                      color: white;
+                      margin-right: 10px;
+                    "
+                    onclick="hideAddProduct()"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Add Product
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders Page -->
+        <div id="orders" class="page">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">342</div>
+              <div class="stat-label">Active Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">1,245</div>
+              <div class="stat-label">Completed Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">23</div>
+              <div class="stat-label">Cancelled Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">Rs. 12,45,000</div>
+              <div class="stat-label">Total Revenue</div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <div class="table-header">
+              <div class="table-title">Order Management</div>
+              <div>
+                <select
+                  class="form-select"
+                  style="width: auto; margin-right: 10px"
+                >
+                  <option>All Orders</option>
+                  <option>Pending</option>
+                  <option>Processing</option>
+                  <option>Completed</option>
+                  <option>Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Products</th>
+                  <th>Total Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#ORD-001</td>
+                  <td>John Doe</td>
+                  <td>EOS PRO WGP15</td>
+                  <td>NRs. 8,000</td>
+                  <td>2025-07-29</td>
+                  <td><span class="status status-active">Completed</span></td>
+                  <td>
+                    <button class="btn btn-success">View</button>
+                    <button class="btn btn-primary">Update</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>#ORD-002</td>
+                  <td>Jane Smith</td>
+                  <td>EOS PRO II SERIES</td>
+                  <td>NRs. 9,000</td>
+                  <td>2025-07-29</td>
+                  <td><span class="status status-inactive">Pending</span></td>
+                  <td>
+                    <button class="btn btn-success">View</button>
+                    <button class="btn btn-primary">Update</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Reports Page -->
+        <div id="reports" class="page">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">Rs. 15,67,890</div>
+              <div class="stat-label">Monthly Revenue</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">2,345</div>
+              <div class="stat-label">Units Sold</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">456</div>
+              <div class="stat-label">New Customers</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">8.7%</div>
+              <div class="stat-label">Growth Rate</div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+            <div class="chart-container">
+              <div class="chart-title">Sales Trend</div>
+              <div class="chart-placeholder">Line Chart - Sales over Time</div>
+            </div>
+            <div class="chart-container">
+              <div class="chart-title">Product Categories</div>
+              <div class="chart-placeholder">
+                Pie Chart - Category Distribution
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-title">Top Selling Products</div>
+            <div class="chart-placeholder">Bar Chart - Product Performance</div>
+          </div>
+
+          <div class="table-container">
+            <div class="table-header">
+              <div class="table-title">Detailed Sales Report</div>
+              <div>
+                <button class="btn btn-primary">Export PDF</button>
+                <button
+                  class="btn"
+                  style="background: #27ae60; color: white; margin-left: 10px"
+                >
+                  Export Excel
+                </button>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Units Sold</th>
+                  <th>Revenue</th>
+                  <th>Profit Margin</th>
+                  <th>Growth</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>EOS PRO WGP15</td>
+                  <td>145</td>
+                  <td>NRs. 8,70,000</td>
+                  <td>25%</td>
+                  <td style="color: #27ae60">+12%</td>
+                </tr>
+                <tr>
+                  <td>EOS PRO II SERIES</td>
+                  <td>98</td>
+                  <td>NRs. 5,88,000</td>
+                  <td>30%</td>
+                  <td style="color: #27ae60">+8%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showPage(pageId) {
+        // Hide all pages
+        const pages = document.querySelectorAll(".page");
+        pages.forEach((page) => page.classList.remove("active"));
+
+        // Show selected page
+        document.getElementById(pageId).classList.add("active");
+
+        // Update nav items
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => item.classList.remove("active"));
+        event.target.closest(".nav-item").classList.add("active");
+
+        // Update page title
+        const titles = {
+          dashboard: "Dashboard",
+          customer: "Customer Management",
+          admin: "Admin Management",
+          products: "Product Management",
+          orders: "Order Management",
+          reports: "Reports & Analytics",
+        };
+        document.getElementById("page-title").textContent = titles[pageId];
+      }
+
+      function showAddProduct() {
+        document.getElementById("add-product-form").style.display = "block";
+      }
+
+      function hideAddProduct() {
+        document.getElementById("add-product-form").style.display = "none";
+      }
+
+      // Add some interactive functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        // Animate stat cards on load
+        const statCards = document.querySelectorAll(".stat-card");
+        statCards.forEach((card, index) => {
+          setTimeout(() => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(20px)";
+            card.style.transition = "all 0.5s ease";
+            setTimeout(() => {
+              card.style.opacity = "1";
+              card.style.transform = "translateY(0)";
+            }, 100);
+          }, index * 100);
+        });
+
+        // Add hover effects to table rows
+        const tableRows = document.querySelectorAll("tbody tr");
+        tableRows.forEach((row) => {
+          row.addEventListener("mouseenter", function () {
+            this.style.transform = "scale(1.01)";
+            this.style.transition = "transform 0.2s ease";
+          });
+          row.addEventListener("mouseleave", function () {
+            this.style.transform = "scale(1)";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
