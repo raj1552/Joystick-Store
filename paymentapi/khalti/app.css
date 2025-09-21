@@ -1,0 +1,28 @@
+* {
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+body {
+    font-size: 21px;
+}
+.button {
+    background-color: #5e338d;
+    font-size: 21px; 
+    cursor: pointer; 
+    color: #fff; 
+    border: none; 
+    padding: 10px 30px;
+    transition: 0.3s;
+}
+.button:hover { background-color: #8646cb; }
+.apibox__detail form .field-group {
+    display: none;
+}
+
+.apibox {
+    border: 1px solid #F2F2F2;
+    width: 100%;
+    max-width: 480px;
+    padding: 30px;
+    margin: 40px auto;
+}
