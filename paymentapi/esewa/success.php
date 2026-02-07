@@ -78,7 +78,19 @@ try {
     
     // Commit transaction
     mysqli_commit($conn);
-    
+
+    // Decouple: send to SQS for async processing (emails, analytics, etc.) on AWS
+    if (file_exists(__DIR__ . '/../../config/sqs_helper.php')) {
+        require_once __DIR__ . '/../../config/sqs_helper.php';
+        sqs_send_message('payment_completed', [
+            'order_id'        => (int) $order_id,
+            'amount'          => (float) ($payment_row['amount'] ?? 0),
+            'method'          => 'esewa',
+            'status'          => 'completed',
+            'transaction_id'  => $transaction_code,
+        ]);
+    }
+
     // Clear session data
     unset($_SESSION['pending_order_id'], $_SESSION['order_total'], $_SESSION['payment_id']);
     unset($_SESSION['pending_payment_order_id'], $_SESSION['pending_payment_amount']);

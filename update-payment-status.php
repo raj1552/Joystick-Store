@@ -45,9 +45,19 @@ function updatePaymentStatus($order_id, $status, $transaction_id = null) {
             mysqli_stmt_bind_param($order_stmt, "s", $order_id);
             mysqli_stmt_execute($order_stmt);
         }
-        
+
         // Commit transaction
         mysqli_commit($conn);
+
+        // Decouple: notify SQS for async processing on AWS
+        if (($status === 'successful' || $status === 'completed') && file_exists(__DIR__ . '/config/sqs_helper.php')) {
+            require_once __DIR__ . '/config/sqs_helper.php';
+            sqs_send_message('payment_completed', [
+                'order_id'        => (int) $order_id,
+                'status'          => $status,
+                'transaction_id'  => $transaction_id,
+            ]);
+        }
         
         return ['success' => true, 'message' => 'Payment status updated successfully'];
         

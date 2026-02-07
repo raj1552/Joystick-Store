@@ -1,0 +1,8 @@
+{
+    "name": "joystick-store/app",
+    "description": "Joystick Store - PHP e-commerce with AWS SQS decoupling",
+    "require": {
+        "php": ">=7.4",
+        "aws/aws-sdk-php": "^3.0"
+    },
+}

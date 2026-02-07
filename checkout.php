@@ -46,62 +46,63 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         mysqli_autocommit($conn, false);
 
         try {
-            // Insert into orders table
-            $sqlOrder = "INSERT INTO orders (customer_id, total_amount, status, created_at) 
-                         VALUES ('$user_id', '$total_amount', 'pending', NOW())";
-            
-            if (!mysqli_query($conn, $sqlOrder)) {
-                throw new Exception("Error inserting order: " . mysqli_error($conn));
+            // Insert into orders table (prepared statement)
+            $stmtOrder = $conn->prepare("INSERT INTO orders (customer_id, total_amount, status, created_at) VALUES (?, ?, 'pending', NOW())");
+            if (!$stmtOrder || !$stmtOrder->bind_param("id", $user_id, $total_amount) || !$stmtOrder->execute()) {
+                throw new Exception("Error inserting order: " . ($conn->error ?: $stmtOrder->error ?? ''));
+            }
+            $order_id = $conn->insert_id;
+            $stmtOrder->close();
+
+            // Get cart items (prepared statement)
+            $stmtCart = $conn->prepare("SELECT c.product_id, c.quantity, p.price, c.color FROM cart c JOIN products p ON c.product_id = p.id WHERE c.customer_id = ? AND c.status = 'pending'");
+            if (!$stmtCart || !$stmtCart->bind_param("i", $user_id) || !$stmtCart->execute()) {
+                throw new Exception("Error fetching cart items: " . ($conn->error ?: $stmtCart->error ?? ''));
+            }
+            $resCart = $stmtCart->get_result();
+
+            $stmtDetail = $conn->prepare("INSERT INTO order_details (order_id, color, address, city, state, zip, product_id, quantity, unit_price, subtotal, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+            if (!$stmtDetail) {
+                throw new Exception("Error preparing order details: " . $conn->error);
             }
 
-            $order_id = mysqli_insert_id($conn);
-
-            // Get cart items
-            $sqlCart = "SELECT c.product_id, c.quantity, p.price, c.color
-                        FROM cart c
-                        JOIN products p ON c.product_id = p.id
-                        WHERE c.customer_id = '$user_id' AND c.status = 'pending'";
-            $resCart = mysqli_query($conn, $sqlCart);
-
-            if (!$resCart) {
-                throw new Exception("Error fetching cart items: " . mysqli_error($conn));
-            }
-
-            $orderDetailsInserted = 0;
             while ($row = mysqli_fetch_assoc($resCart)) {
                 $product_id = $row['product_id'];
-                $color = $row['color'];
+                $color = $row['color'] ?? '';
                 $quantity = $row['quantity'];
                 $unit_price = $row['price'];
                 $subtotal = $quantity * $unit_price;
-
-                $sqlInsert = "INSERT INTO order_details 
-                    (order_id, color, address, city, state, zip, product_id, quantity, unit_price, subtotal, created_at) 
-                    VALUES 
-                    ('$order_id', '$color', '$address', '$city', '$state', '$zip', '$product_id', '$quantity', '$unit_price', '$subtotal', NOW())";
-                
-                if (!mysqli_query($conn, $sqlInsert)) {
-                    throw new Exception("Error inserting order details: " . mysqli_error($conn));
+                $stmtDetail->bind_param("issssiiidd", $order_id, $color, $address, $city, $state, $zip, $product_id, $quantity, $unit_price, $subtotal);
+                if (!$stmtDetail->execute()) {
+                    throw new Exception("Error inserting order details: " . $stmtDetail->error);
                 }
-                $orderDetailsInserted++;
             }
+            $stmtDetail->close();
+            $stmtCart->close();
 
-            // Update cart status to 'completed' and set order_id
-            $sqlUpdate = "UPDATE cart 
-                         SET status = 'completed', order_id = '$order_id', updated_at = NOW() 
-                         WHERE customer_id = '$user_id' AND status = 'pending'";
-            
-            if (!mysqli_query($conn, $sqlUpdate)) {
-                throw new Exception("Error updating cart: " . mysqli_error($conn));
+            // Update cart status to 'completed' and set order_id (prepared statement)
+            $stmtUpdate = $conn->prepare("UPDATE cart SET status = 'Completed', order_id = ?, updated_at = NOW() WHERE customer_id = ? AND (status = 'pending' OR status = 'Pending')");
+            if (!$stmtUpdate || !$stmtUpdate->bind_param("ii", $order_id, $user_id) || !$stmtUpdate->execute()) {
+                throw new Exception("Error updating cart: " . ($conn->error ?: $stmtUpdate->error ?? ''));
             }
-            
-            // Optional: Log how many cart items were updated
-            $affected_rows = mysqli_affected_rows($conn);
-            echo "<script>console.log('Cart items updated: $affected_rows');</script>";
+            $affected_rows = $stmtUpdate->affected_rows;
+            $stmtUpdate->close();
 
             // Commit transaction
             mysqli_commit($conn);
-            
+
+            // Decouple: send to SQS for async processing (emails, inventory, etc.) on AWS
+            if (file_exists(__DIR__ . '/config/sqs_helper.php')) {
+                require_once __DIR__ . '/config/sqs_helper.php';
+                sqs_send_message('order_created', [
+                    'order_id'     => (int) $order_id,
+                    'customer_id'  => (int) $user_id,
+                    'total_amount' => (float) $total_amount,
+                    'address'      => $address,
+                    'city'         => $city,
+                ]);
+            }
+
             // Store order info in session for payment
             $_SESSION['pending_order_id'] = $order_id;
             $_SESSION['order_total'] = $total_amount;

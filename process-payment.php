@@ -121,7 +121,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Handle different payment methods
     if ($payment_method === 'cod') {
-        // COD: Clear session and redirect to success
+        // Decouple: notify SQS for async processing (e.g. confirmation email)
+        if (file_exists(__DIR__ . '/config/sqs_helper.php')) {
+            require_once __DIR__ . '/config/sqs_helper.php';
+            sqs_send_message('payment_completed', [
+                'order_id' => (int) $order_id,
+                'amount'   => (float) $total_amount,
+                'method'   => 'cod',
+                'status'   => 'completed',
+            ]);
+        }
         unset($_SESSION['pending_order_id'], $_SESSION['order_total']);
         error_log("COD: Redirecting to success page");
         header("Location: ./thankyou.php?status=success&order_id=$order_id&method=cod");
