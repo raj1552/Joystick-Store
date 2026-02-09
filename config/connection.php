@@ -1,36 +1,55 @@
 <?php
-// Load .env if present (for local dev or single config file)
-$envFile = dirname(__DIR__) . '/.env';
-if (is_file($envFile)) {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line === '' || $line[0] === '#') continue;
-        if (strpos($line, '=') === false) continue;
-        list($name, $value) = explode('=', $line, 2);
-        $name = trim($name);
-        $value = trim($value, " \t\"'");
-        if ($name !== '') {
-            putenv("$name=$value");
-            $_ENV[$name] = $value;
-        }
+// config/connection.php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Dotenv\Dotenv;
+use Aws\SecretsManager\SecretsManagerClient;
+use Aws\Exception\AwsException;
+
+try {
+    // Load .env
+    $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+    $dotenv->load();
+
+    $awsRegion = $_ENV['AWS_REGION'] ?? '';
+    $secretName = $_ENV['AWS_SECRET_NAME'] ?? '';
+
+    if (!$awsRegion || !$secretName) {
+        throw new Exception("AWS_REGION or AWS_SECRET_NAME is not set in .env");
     }
+
+    // AWS Secrets Manager client
+    $client = new SecretsManagerClient([
+        'version' => 'latest',
+        'region'  => $awsRegion
+    ]);
+
+    $result = $client->getSecretValue(['SecretId' => $secretName]);
+    $secret = json_decode($result['SecretString'], true);
+
+    $dbHost = $secret['host'];
+    $dbName = $secret['dbname'] ?? $secret['dbInstanceIdentifier'] ?? 'levelup';
+    $dbUser = $secret['username'];
+    $dbPass = $secret['password'];
+    $dbPort = $secret['port'] ?? 3306;
+
+    // mysqli connection
+    $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName, $dbPort);
+
+    if ($conn->connect_error) {
+        throw new Exception("Database connection failed: " . $conn->connect_error);
+    }
+
+    // Set charset
+    $conn->set_charset("utf8mb4");
+
+    // Now $conn is available for mysqli_query in your code
+
+} catch (\Dotenv\Exception\InvalidPathException $e) {
+    die("Error: .env file not found. " . $e->getMessage());
+} catch (AwsException $e) {
+    die("Error fetching secret: " . $e->getMessage());
+} catch (Exception $e) {
+    die("Unexpected error: " . $e->getMessage());
 }
-
-// Use environment variables for AWS RDS / deployment; fallback to local defaults
-$host   = getenv('DB_HOST')   ?: '127.0.0.1';
-$port   = (int) (getenv('DB_PORT') ?: 3306);
-$dbuser = getenv('DB_USER')   ?: 'root';
-$dbpwd  = getenv('DB_PASSWORD') ?: '';
-$dbname = getenv('DB_NAME')   ?: 'levelup';
-
-// Use port so PHP connects via TCP (127.0.0.1:3306) instead of Unix socket (localhost)
-$conn = new mysqli($host, $dbuser, $dbpwd, $dbname, $port);
-
-if ($conn->connect_error) {
-    die('Oops! Database connection failed: ' . $conn->connect_error);
-}
-
-// echo "<pre>";
-// print_r($conn); // developer checking dataz
-// echo "</pre>";
